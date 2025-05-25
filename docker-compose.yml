@@ -1,0 +1,101 @@
+version: "3.9"
+
+services:
+  ja4-nginx:
+    image: ghcr.io/foxio-llc/ja4-nginx-module:v1.3.0-beta
+    container_name: ja4-nginx-1
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf/nginx.conf:ro
+      - ./nginx/certs/cert.pem:/etc/nginx/conf/cert.pem:ro
+      - ./nginx/certs/key.pem:/etc/nginx/conf/key.pem:ro
+    depends_on:
+      - fastapi
+    networks: [backend]
+
+  fastapi:
+    build: ./backend # dùng Dockerfile ở bước 2
+    env_file: .env # chứa DATABASE_URL, REDIS_URL
+    expose:
+      - "8000" # chỉ nội mạng
+    volumes:
+      - ./runtime-logs:/code/logs # thư mục host -> container
+    depends_on:
+      - postgres
+      - redis
+    networks: [backend]
+
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: pizza
+      POSTGRES_USER: pizza_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-pizza_pass}
+      # POSTGRES_PASSWORD: pizza_pass
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks: [backend]
+
+  redis:
+    image: redis:7
+    networks: [backend]
+
+networks:
+  backend:
+
+volumes:
+  db-data:
+# version: "3.9"
+
+# services:
+#   ja4-nginx:
+#     image: ghcr.io/foxio-llc/ja4-nginx-module:v1.3.0-beta
+#     container_name: ja4-nginx
+#     ports:
+#       - "80:80"
+#       - "443:443"
+#     volumes:
+#       - ./nginx/nginx.conf:/etc/nginx/conf/nginx.conf:ro
+#       - ./nginx/certs/cert.pem:/etc/nginx/conf/cert.pem:ro
+#       - ./nginx/certs/key.pem:/etc/nginx/conf/key.pem:ro
+#     depends_on:
+#       - fastapi
+#     networks: [backend]
+
+#   fastapi:
+#     build: ./backend
+#     env_file: .env # chứa DSN Postgres, Redis URL
+#     expose:
+#       - "8000" # chỉ nội mạng, không publish
+#     depends_on:
+#       - postgres
+#       - redis
+#     networks: [backend]
+
+#   postgres:
+#     image: postgres:16
+#     container_name: db
+#     volumes:
+#       - db-data:/var/lib/postgresql/data
+#     environment:
+#       POSTGRES_DB: pizza
+#       POSTGRES_USER: pizza_user
+#       POSTGRES_PASSWORD: pizza_pass
+#     ports:
+#       - "5432:5432" # tuỳ bạn, chỉ cần cho dev
+#     networks: [backend]
+
+#   redis:
+#     image: redis:7
+#     container_name: redis
+#     expose:
+#       - "6379"
+#     networks: [backend]
+
+# networks:
+#   backend:
+
+# volumes:
+#   db-data:

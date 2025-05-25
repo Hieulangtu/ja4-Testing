@@ -1,0 +1,12 @@
+# Python dependencies for the FastAPI app
+fastapi==0.95.2          # FastAPI framework for the API
+uvicorn[standard]==0.20.0  # Uvicorn ASGI server
+psycopg2-binary==2.9.6   # PostgreSQL driver (binary distribution)
+redis==4.5.5             # Redis client library for Python
+sqlalchemy==2.0.21 
+asyncpg==0.29.0 
+sqlalchemy-utils==0.41.2
+werkzeug==2.3.8
+fastapi-jwt-auth==0.5.0
+apscheduler==3.11.0 
+python-dotenv==1.0.1
