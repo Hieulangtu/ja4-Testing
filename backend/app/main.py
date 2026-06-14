@@ -122,14 +122,13 @@ app.openapi = custom_openapi
 async def ja4_echo(req: Request):
     """
     return JA4 fingerprint from Nginx add to header. 
-    token not require.
+    only for checking .
     """
     return {
         "x-ja4": req.headers.get("x-ja4"),
         "x-ja4-string": req.headers.get("x-ja4-string"),
         "ip_address": req.headers.get("x-real-ip",req.client.host),
-        "fingerprintHTTP":    generate_fingerprint(req)  
-        
+        "fingerprintHTTP":    generate_fingerprint(req)     
     }
 
 
